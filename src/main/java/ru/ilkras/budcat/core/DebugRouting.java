@@ -2,15 +2,15 @@ package ru.ilkras.budcat.core;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import ru.ilkras.budcat.BudcatApplication;
-import ru.ilkras.budcat.data.NotOnlyEnv;
+
+import java.util.HashMap;
 
 @RestController
-public class Routing {
-    @GetMapping("/")
+public class DebugRouting {
+    @GetMapping("/base_url")
     public String base() {
-        if (BudcatApplication.NOE.debugEnpoitsEnabled) {
+        if (BudcatApplication.NOE.debugEndpointsEnabled) {
             return BudcatApplication.NOE.baseUrl;
         }
         return "";
