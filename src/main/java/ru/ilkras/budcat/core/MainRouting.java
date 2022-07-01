@@ -1,25 +1,23 @@
 package ru.ilkras.budcat.core;
 
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import ru.ilkras.budcat.BudcatApplication;
+import ru.ilkras.budcat.models.UrlsBond;
 
 import java.util.HashMap;
 
-class WhatTheActualFuck {
-    private String FUCK = "text";
-
-    public String getFUCK() {
-        return FUCK;
-    }
-}
-
 @RestController
 public class MainRouting {
-    private final HashMap<String, Integer> shortener = new HashMap<>();
+    private final HashMap<String, Integer> shortener = new HashMap<>(){{put("fuck", 228);}};
+    private final HashMap<Integer, String> longerer = new HashMap<>(){{put(228, "fuck");}};
 
-    @GetMapping("/wtf")
-    public WhatTheActualFuck wtf() {
-        return new WhatTheActualFuck();
+    @GetMapping("url/expand")
+    public UrlsBond expandUrl(@RequestParam("id") Integer id) {
+        if (longerer.containsKey(id))
+            return new UrlsBond(longerer.get(id), BudcatApplication.NOE.baseUrl + "/u/" + id);
+        throw new NullPointerException();
     }
+
 }
