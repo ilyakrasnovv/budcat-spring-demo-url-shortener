@@ -1,13 +1,14 @@
 package ru.ilkras.budcat.models;
 
+import ru.ilkras.budcat.BudcatApplication;
 
 public class UrlsBond {
     private String origin;
     private String shortened;
 
-    public UrlsBond(String _origin, String _shortened) {
-        origin = _origin;
-        shortened = _shortened;
+    public UrlsBond(String origin, Long id) {
+        this.origin = origin;
+        this.shortened = BudcatApplication.NOE.baseUrl + "/u/" + id;
     }
 
     public String getOrigin() {

@@ -9,8 +9,8 @@ public class BudcatApplication {
     public static NotOnlyEnv NOE;
 
     public static void main(String[] args) {
-        SpringApplication.run(BudcatApplication.class, args);
         NOE = new NotOnlyEnv();
+        SpringApplication.run(BudcatApplication.class, args);
     }
 
 }

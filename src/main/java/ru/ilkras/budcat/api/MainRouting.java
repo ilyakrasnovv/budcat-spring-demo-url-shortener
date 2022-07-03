@@ -1,27 +1,34 @@
 package ru.ilkras.budcat.api;
 
-import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import ru.ilkras.budcat.data.UrlsBondsManager;
 import ru.ilkras.budcat.models.UrlsBond;
-import ru.ilkras.budcat.utilities.DoubleMap;
-import ru.ilkras.budcat.utilities.UUrlGen;
 
-import java.util.HashMap;
+import java.net.URI;
 
 @RestController
 public class MainRouting {
-    DoubleMap<String, Integer> tryDMap = new DoubleMap<>(new HashMap<>(), new HashMap<>(),
-            (DoubleMap.OnAdd<String, Integer>) ((String s, Integer i) -> {
-                LoggerFactory.getLogger(MainRouting.class).info(s + i);
-            }));
-    // TODO -- implement DataController and move this map there
+    final UrlsBondsManager bonds = new UrlsBondsManager();
+
+    @GetMapping("url/shorten")
+    public UrlsBond shortenUrl(@RequestParam("longUrl") String id) {
+        return bonds.shortenUrl(id);
+    }
 
     @GetMapping("url/expand")
-    public UrlsBond expandUrl(@RequestParam("id") Integer id) {
-        if (tryDMap.rget(id) == null)
-            throw new RuntimeException("Cannot find shortened url with id " + id);
-        return new UrlsBond(tryDMap.rget(id), new UUrlGen(id).toString());
+    public UrlsBond expandUrl(@RequestParam("id") Long id) {
+        return bonds.expandUrl(id);
+    }
+
+    @GetMapping("u/{id}")
+    public ResponseEntity<?> redirecting(@PathVariable("id") Long id) {
+        String longUrl = bonds.expandUrl(id).getOrigin();
+        return ResponseEntity.status(HttpStatus.FOUND).location(URI.create(longUrl)).build();
     }
 }

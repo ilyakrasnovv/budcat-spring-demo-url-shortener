@@ -21,6 +21,8 @@ dependencies {
     runtimeOnly 'com.h2database:h2'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
+    implementation "com.h2database:h2:2.1.210"
+    implementation "org.jdbi:jdbi3-core:3.28.0"
 }
 
 tasks.named('test') {
