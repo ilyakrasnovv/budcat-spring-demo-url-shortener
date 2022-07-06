@@ -4,6 +4,8 @@ build/
 !gradle/wrapper/gradle-wrapper.jar
 !**/src/main/**/build/
 !**/src/test/**/build/
+budcat_database.mv.db
+budcat_database.trace.db
 
 ### STS ###
 .apt_generated

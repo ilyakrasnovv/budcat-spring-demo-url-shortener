@@ -11,7 +11,7 @@ import static java.lang.Long.max;
 public class UrlsBondsManager {
     DbManager db;
     DoubleMap<String, Long> map;
-    Long maxId = 0L;
+    Long maxId = -1L;
 
 
     public UrlsBondsManager() {
@@ -23,18 +23,15 @@ public class UrlsBondsManager {
             recoveredFromDB.put(it.getOrigin(), it.getId());
             recoveredFromDBReversed.put(it.getId(), it.getOrigin());
         }
-        map = new DoubleMap<String, Long>(recoveredFromDB, recoveredFromDBReversed,
-            (DoubleMap.OnAdd<String, Long>) ((String s, Long i) -> {
-                db.addUrlsBond(new DbUrlsBond(s, i));
-            }
+        map = new DoubleMap(recoveredFromDB, recoveredFromDBReversed,
+            (DoubleMap.OnAdd<String, Long>) ((String s, Long i) -> db.addUrlsBond(new DbUrlsBond(s, i))
         ));
     }
 
     public UrlsBond shortenUrl(String url) {
         Long id = map.get(url);
         if (id == null) {
-            id = maxId;
-            maxId++;
+            id = ++maxId;
             map.add(url, id);
         }
         return new UrlsBond(url, id);

@@ -1,7 +1,5 @@
 package ru.ilkras.budcat.utilities;
 
-import org.springframework.stereotype.Service;
-
 import java.util.Map;
 
 public class DoubleMap<V1, V2> {
