@@ -13,7 +13,7 @@ public class DbManager {
     public DbManager() {
         jdbi.setSqlLogger(new Slf4JSqlLogger());
         jdbi.useHandle(handle -> handle.execute(
-                "create table if not exists URLSBONDS " +
+                "CREATE TABLE IF NOT EXISTS URLSBONDS " +
                         "(ORIGIN VARCHAR, ID LONG PRIMARY KEY)"
         ));
     }

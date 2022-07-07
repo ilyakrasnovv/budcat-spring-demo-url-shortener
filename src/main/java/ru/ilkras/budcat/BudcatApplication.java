@@ -10,8 +10,11 @@ import java.io.IOException;
 public class BudcatApplication {
     public static NotOnlyEnv NOE;
 
-    public static void main(String[] args) throws IOException {
+    public BudcatApplication() throws IOException {
         NOE = new NotOnlyEnv();
+    }
+
+    public static void main(String[] args) {
         SpringApplication.run(BudcatApplication.class, args);
     }
 
