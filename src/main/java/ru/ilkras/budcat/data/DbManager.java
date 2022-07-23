@@ -7,6 +7,11 @@ import ru.ilkras.budcat.models.DbUrlsBond;
 
 import java.util.List;
 
+// FIXME: Для тестирования удобнее что бы этот класс наследовался от интерфейса с двумя методами. Тогда в тесте можно будет имплементацию чем-то подменить не затрагивая менеджер.
+//    interface InterfaceDbManager {
+//        void addUrlsBond(DbUrlsBond bond);
+//        List<DbUrlsBond> recoverBonds();
+//    }
 public class DbManager {
     Jdbi jdbi = Jdbi.create(BudcatApplication.NOE.databasePath);
 
