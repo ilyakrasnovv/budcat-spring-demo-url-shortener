@@ -10,11 +10,11 @@ import ru.ilkras.budcat.BudcatApplication;
 public class DebugRouting {
     @GetMapping("/debug/base_url")
     public String base() {
-        if (BudcatApplication.NOE.debugEndpointsEnabled) {
-            return BudcatApplication.NOE.baseUrl;
+        if (BudcatApplication.NOE.getDebugEndpointsEnabled()) {
+            return BudcatApplication.NOE.getBaseUrl();
         } else {
             throw new ResponseStatusException(
-                    HttpStatus.NOT_FOUND, "entity not found"
+                    HttpStatus.NOT_FOUND
             );
         }
     }

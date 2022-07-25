@@ -13,7 +13,7 @@ import java.util.List;
 //        List<DbUrlsBond> recoverBonds();
 //    }
 public class DbManager {
-    Jdbi jdbi = Jdbi.create(BudcatApplication.NOE.databasePath);
+    Jdbi jdbi = Jdbi.create(BudcatApplication.NOE.getDatabasePath());
 
     public DbManager() {
         jdbi.setSqlLogger(new Slf4JSqlLogger());

@@ -3,6 +3,7 @@ package ru.ilkras.budcat.api;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 import ru.ilkras.budcat.BudcatApplication;
 import ru.ilkras.budcat.data.UrlsBondsManager;
 import ru.ilkras.budcat.models.UrlsBond;
@@ -25,14 +26,20 @@ public class MainRouting {
     }
 
     @GetMapping("u/{id}")
-    public ResponseEntity<?> redirecting(@PathVariable("id") Long id) {
-        String longUrl = bonds.expandUrl(id).getOrigin();
-        return ResponseEntity.status(HttpStatus.MOVED_PERMANENTLY).location(URI.create(longUrl)).build();
+    public ResponseEntity<?> redirecting(@PathVariable("id") String s) {
+        try {
+            Long id = Long.parseLong(s);
+            String longUrl = bonds.expandUrl(id).getOrigin();
+            return ResponseEntity.status(HttpStatus.MOVED_PERMANENTLY).location(URI.create(longUrl)).build();
+        } catch (Exception e) {
+            throw new ResponseStatusException(
+                    HttpStatus.NOT_FOUND
+            );
+        }
     }
 
     @RequestMapping("/")
-    @ResponseBody
-    public String forms() {
-        return BudcatApplication.NOE.formHtml;
+    public ResponseEntity<?> forms() {
+        return ResponseEntity.status(HttpStatus.FOUND).location(URI.create("/index.html")).build();
     }
 }

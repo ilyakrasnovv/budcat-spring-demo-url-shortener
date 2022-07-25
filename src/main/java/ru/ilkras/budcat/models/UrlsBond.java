@@ -9,7 +9,7 @@ public class UrlsBond {
     public UrlsBond(String origin, Long id) {
         this.origin = origin;
         // FIXME: Использование глобальной переменной, я бы формировал полный URL там где ты создаёшь инстанс этого класса.
-        this.shortened = BudcatApplication.NOE.baseUrl + "/u/" + id;
+        this.shortened = BudcatApplication.NOE.getBaseUrl() + "/u/" + id;
     }
 
     public String getOrigin() {
