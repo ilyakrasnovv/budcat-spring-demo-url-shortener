@@ -3,6 +3,7 @@ package ru.ilkras.budcat.models;
 import org.jdbi.v3.core.mapper.reflect.ColumnName;
 import org.jdbi.v3.core.mapper.reflect.JdbiConstructor;
 
+// FIXME: Надо форсить проверки что id и origin не null - через расстановку org.jetbrains.annotations.NotNull и runtime проверки в конструкторе и сеттерах.
 public class DbUrlsBond {
     private String origin;
     private Long id;

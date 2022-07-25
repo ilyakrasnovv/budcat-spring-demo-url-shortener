@@ -32,10 +32,18 @@ public class DoubleMap<V1, V2> {
         return reversedMap.get(key);
     }
 
+    // FIXME: В многопоточном приложении это изменение мапов не являет атомарным, это скорее всего испортит память если пачку урлов параллельно добавлять.
+    //  Если заменить этот класс LoadingCache из caffeine то придётся сделать два LoadingCache<V1, V2> и LoadingCache<V2, V1>, обновлять их содержимое во
+    //  вложенном map.compute() типа:
+    //        map.compute(v1, (v11, v21) -> {
+    //            reversedMap.put(v2, v1);
+    //            return v2;
+    //        });
     public void add(V1 v1, V2 v2) {
         if (onAdd != null) {
             onAdd.onAdd(v1, v2);
         }
+
         map.put(v1, v2);
         reversedMap.put(v2, v1);
     }
