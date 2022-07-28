@@ -5,6 +5,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 import ru.ilkras.budcat.BudcatApplication;
+import ru.ilkras.budcat.data.DbManager;
 import ru.ilkras.budcat.data.UrlsBondsManager;
 import ru.ilkras.budcat.models.UrlsBond;
 import ru.ilkras.budcat.utilities.URLFormatter;
@@ -13,7 +14,7 @@ import java.net.URI;
 
 @RestController
 public class MainRouting {
-    final UrlsBondsManager bonds = new UrlsBondsManager();
+    final UrlsBondsManager bonds = new UrlsBondsManager(new DbManager());
 
     @GetMapping("url/shorten")
     public UrlsBond shortenUrl(@RequestParam("longUrl") String longUrl) {

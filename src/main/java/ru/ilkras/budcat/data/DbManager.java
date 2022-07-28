@@ -35,6 +35,7 @@ public class DbManager implements UrlBondsSavingManager {
         );
     }
 
+    @Override
     public DbUrlsBond loadBondById(Long id) throws DuplicatesFoundException {
         List<DbUrlsBond> response = jdbi.withHandle(handle ->
                 handle.createQuery("SELECT * FROM URLSBONDS WHERE ID=:ID")
@@ -49,7 +50,7 @@ public class DbManager implements UrlBondsSavingManager {
                     "FOUND SEVERAL BONDS WITH THE SAME ID (" + id + ") IN THE DATABASE");
         return response.get(0);
     }
-
+    @Override
     public DbUrlsBond loadBondByOrigin(String origin) throws DuplicatesFoundException {
         List<DbUrlsBond> response = jdbi.withHandle(handle ->
                 handle.createQuery("SELECT * FROM URLSBONDS WHERE ORIGIN=:ORIGIN")

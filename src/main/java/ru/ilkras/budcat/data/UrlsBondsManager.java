@@ -4,7 +4,7 @@ import com.github.benmanes.caffeine.cache.Caffeine;
 import com.github.benmanes.caffeine.cache.LoadingCache;
 import ru.ilkras.budcat.models.DbUrlsBond;
 import ru.ilkras.budcat.models.UrlsBond;
-import ru.ilkras.budcat.utilities.DoubleMap;
+import ru.ilkras.budcat.utilities.DoubleMapCache;
 import ru.ilkras.budcat.utilities.URLFormatter;
 
 import java.util.concurrent.TimeUnit;
@@ -12,12 +12,12 @@ import java.util.concurrent.TimeUnit;
 import static java.lang.Long.max;
 
 public class UrlsBondsManager {
-    private final DbManager db; // InterfaceDbManager db
-    private final DoubleMap<String, Long> map;
+    private final UrlBondsSavingManager db;
+    private final DoubleMapCache<String, Long> map;
     private Long maxId = -1L;
 
-    public UrlsBondsManager(/* InterfaceDbManager db */) {
-        db = new DbManager();
+    public UrlsBondsManager(UrlBondsSavingManager dbProvider) {
+        db = dbProvider;
         Caffeine<Object, Object> builder = Caffeine.newBuilder()
                 .maximumSize(10_000)
                 .expireAfterWrite(1, TimeUnit.DAYS);
@@ -39,14 +39,8 @@ public class UrlsBondsManager {
             recoveredFromDBReversed.put(it.getId(), it.getOrigin());
         }
 
-        // FIXME: Фактически это выглядит как прикрученный кэш поверх базы. Я бы сделал это иначе. Обычно идёт попытка прочитать что-то тз кэша,
-        //  если она неудачная то загружается из базы. В случае добавления нового урла сначала пишешь в базу, потом добавляешь в кэш. Это
-        //  важно когда ты используешь внешний кэш, типа Redis, что бы вдруг не получилось так, что второй web сервер в кластере вытащил
-        //  чтото из кэша, а в базе этой записи ещё нет. Пример неудачной ситуации - сервер A добавил что-то в кэш и умер до обновления базы
-        //  Думаю было бы элегантнее унаследовать DbManager от интерфейса с двумя методами, а instance кэша (например https://github.com/ben-manes/caffeine)
-        //  сделать полем в этом классе.
-        map = new DoubleMap(recoveredFromDB, recoveredFromDBReversed,
-            (DoubleMap.OnAdd<String, Long>) ((String s, Long i) -> db.addUrlsBond(new DbUrlsBond(s, i))
+        map = new DoubleMapCache(recoveredFromDB, recoveredFromDBReversed,
+            (DoubleMapCache.OnAdd<String, Long>) ((String s, Long i) -> db.addUrlsBond(new DbUrlsBond(s, i))
         ));
     }
 
