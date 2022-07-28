@@ -10,5 +10,5 @@ import org.springframework.stereotype.Controller;
  *
  */
 @Controller
-public class StaticContent { }
+public class StaticResources { }
 

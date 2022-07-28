@@ -56,11 +56,14 @@ class BudcatApplicationTests {
 
     @Test
     void testHomePageViaMockMvc() throws Exception {
+        String homePageLocation =
         mockMvc
                 .perform(get("/"))
                 .andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(content().string(containsString("url to shorten")));
+                .andExpect(status().isFound())
+                .andReturn()
+                .getResponse().getHeader("Location");
+        assertThat(homePageLocation).isEqualTo("/index.html");
     }
 
     String generateUrl() {

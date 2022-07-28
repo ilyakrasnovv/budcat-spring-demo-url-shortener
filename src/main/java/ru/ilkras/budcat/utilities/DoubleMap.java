@@ -43,8 +43,9 @@ public class DoubleMap<V1, V2> {
         if (onAdd != null) {
             onAdd.onAdd(v1, v2);
         }
-
-        map.put(v1, v2);
-        reversedMap.put(v2, v1);
+        map.compute(v1, (v11, v22) -> {
+            reversedMap.put(v2, v1);
+            return v2;
+        });
     }
 }

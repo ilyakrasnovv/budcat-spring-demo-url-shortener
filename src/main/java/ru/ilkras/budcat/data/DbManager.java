@@ -7,13 +7,8 @@ import ru.ilkras.budcat.models.DbUrlsBond;
 
 import java.util.List;
 
-// FIXME: Для тестирования удобнее что бы этот класс наследовался от интерфейса с двумя методами. Тогда в тесте можно будет имплементацию чем-то подменить не затрагивая менеджер.
-//    interface InterfaceDbManager {
-//        void addUrlsBond(DbUrlsBond bond);
-//        List<DbUrlsBond> recoverBonds();
-//    }
-public class DbManager {
-    Jdbi jdbi = Jdbi.create(BudcatApplication.NOE.getDatabasePath());
+public class DbManager implements UrlBondsSavingManager {
+    private final Jdbi jdbi = Jdbi.create(BudcatApplication.NOE.getDatabasePath());
 
     public DbManager() {
         jdbi.setSqlLogger(new Slf4JSqlLogger());
@@ -38,5 +33,35 @@ public class DbManager {
                         .mapToBean(DbUrlsBond.class)
                         .list()
         );
+    }
+
+    public DbUrlsBond loadBondById(Long id) throws DuplicatesFoundException {
+        List<DbUrlsBond> response = jdbi.withHandle(handle ->
+                handle.createQuery("SELECT * FROM URLSBONDS WHERE ID=:ID")
+                        .bind("ID", id)
+                        .mapToBean(DbUrlsBond.class)
+                        .list()
+        );
+        if (response.isEmpty())
+            return null;
+        if (response.size() > 1)
+            throw new DuplicatesFoundException(
+                    "FOUND SEVERAL BONDS WITH THE SAME ID (" + id + ") IN THE DATABASE");
+        return response.get(0);
+    }
+
+    public DbUrlsBond loadBondByOrigin(String origin) throws DuplicatesFoundException {
+        List<DbUrlsBond> response = jdbi.withHandle(handle ->
+                handle.createQuery("SELECT * FROM URLSBONDS WHERE ORIGIN=:ORIGIN")
+                        .bind("ORIGIN", origin)
+                        .mapToBean(DbUrlsBond.class)
+                        .list()
+        );
+        if (response.isEmpty())
+            return null;
+        if (response.size() > 1)
+            throw new DuplicatesFoundException(
+                    "FOUND SEVERAL BONDS WITH THE SAME ORIGIN (" + origin + ") IN THE DATABASE");
+        return response.get(0);
     }
 }

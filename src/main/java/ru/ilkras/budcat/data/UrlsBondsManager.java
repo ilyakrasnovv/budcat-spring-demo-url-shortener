@@ -9,12 +9,9 @@ import java.util.HashMap;
 import static java.lang.Long.max;
 
 public class UrlsBondsManager {
-
-    // FIXME: Поля класса лучше делать приватными.
-
-    DbManager db; // InterfaceDbManager db
-    DoubleMap<String, Long> map;
-    Long maxId = -1L;
+    private final DbManager db; // InterfaceDbManager db
+    private final DoubleMap<String, Long> map;
+    private Long maxId = -1L;
 
     public UrlsBondsManager(/* InterfaceDbManager db */) {
         db = new DbManager();
