@@ -1,10 +1,13 @@
 package ru.ilkras.budcat.data;
 
+import com.github.benmanes.caffeine.cache.Caffeine;
+import com.github.benmanes.caffeine.cache.LoadingCache;
 import ru.ilkras.budcat.models.DbUrlsBond;
 import ru.ilkras.budcat.models.UrlsBond;
 import ru.ilkras.budcat.utilities.DoubleMap;
+import ru.ilkras.budcat.utilities.URLFormatter;
 
-import java.util.HashMap;
+import java.util.concurrent.TimeUnit;
 
 import static java.lang.Long.max;
 
@@ -15,8 +18,21 @@ public class UrlsBondsManager {
 
     public UrlsBondsManager(/* InterfaceDbManager db */) {
         db = new DbManager();
-        HashMap<String, Long> recoveredFromDB = new HashMap<>();
-        HashMap<Long, String> recoveredFromDBReversed = new HashMap<>();
+        Caffeine<Object, Object> builder = Caffeine.newBuilder()
+                .maximumSize(10_000)
+                .expireAfterWrite(1, TimeUnit.DAYS);
+        LoadingCache<String, Long> recoveredFromDB = builder.build(keyOrigin -> {
+            DbUrlsBond loaded = db.loadBondByOrigin(keyOrigin);
+            if (loaded == null)
+                return null;
+            return loaded.getId();
+        });
+        LoadingCache<Long, String> recoveredFromDBReversed = builder.build(keyId -> {
+            DbUrlsBond loaded = db.loadBondById(keyId);
+            if (loaded == null)
+                return null;
+            return loaded.getOrigin();
+        });
         for (DbUrlsBond it : db.recoverBonds()) {
             maxId = max(maxId, it.getId());
             recoveredFromDB.put(it.getOrigin(), it.getId());
@@ -40,13 +56,13 @@ public class UrlsBondsManager {
             id = ++maxId;
             map.add(url, id);
         }
-        return new UrlsBond(url, id);
+        return new UrlsBond(url, URLFormatter.createShortenedById(id));
     }
 
     public UrlsBond expandUrl(Long id) {
         String url = map.rget(id);
         if (url == null)
             throw new RuntimeException("Cannot find shortened url with id " + id);
-        return new UrlsBond(map.rget(id), id);
+        return new UrlsBond(map.rget(id), URLFormatter.createShortenedById(id));
     }
 }

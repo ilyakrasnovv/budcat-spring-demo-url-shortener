@@ -17,7 +17,7 @@ public class MainRouting {
 
     @GetMapping("url/shorten")
     public UrlsBond shortenUrl(@RequestParam("longUrl") String longUrl) {
-        return bonds.shortenUrl(new URLFormatter().addHttpIfNeeded(longUrl));
+        return bonds.shortenUrl(URLFormatter.addHttpIfNeeded(longUrl));
     }
 
     @GetMapping("url/expand")
