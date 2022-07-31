@@ -5,8 +5,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 import ru.ilkras.budcat.BudcatApplication;
-import ru.ilkras.budcat.data.DbManager;
-import ru.ilkras.budcat.data.UrlsBondsManager;
+import ru.ilkras.budcat.data.*;
 import ru.ilkras.budcat.models.UrlsBond;
 import ru.ilkras.budcat.utilities.URLFormatter;
 
@@ -14,16 +13,35 @@ import java.net.URI;
 
 @RestController
 public class MainRouting {
-    final UrlsBondsManager bonds = new UrlsBondsManager(new DbManager());
+    private UrlsBondsManagerInterface bonds = new UrlsBondsManager(new DbManager());
+
+    public MainRouting() {}
+
+    public MainRouting(UrlsBondsManagerInterface iBonds) {
+        bonds = iBonds;
+    }
 
     @GetMapping("url/shorten")
     public UrlsBond shortenUrl(@RequestParam("longUrl") String longUrl) {
-        return bonds.shortenUrl(URLFormatter.addHttpIfNeeded(longUrl));
+        try {
+            return bonds.shortenUrl(URLFormatter.addHttpIfNeeded(longUrl));
+        } catch (DuplicatesFoundException e) {
+            throw new ResponseStatusException(
+                    HttpStatus.INTERNAL_SERVER_ERROR
+            );
+        }
     }
 
     @GetMapping("url/expand")
     public UrlsBond expandUrl(@RequestParam("id") Long id) {
-        return bonds.expandUrl(id);
+        try {
+            return bonds.expandUrl(id);
+        } catch (DuplicatesFoundException e) {
+            throw new ResponseStatusException(
+                    HttpStatus.INTERNAL_SERVER_ERROR
+            );
+        }
+
     }
 
     @GetMapping("u/{id}")

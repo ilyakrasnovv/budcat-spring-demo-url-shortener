@@ -3,13 +3,7 @@ package ru.ilkras.budcat.utilities;
 import com.github.benmanes.caffeine.cache.Cache;
 
 public class DoubleMapCache<V1, V2> implements DoubleMap<V1, V2> {
-    @FunctionalInterface
-    public interface OnAdd<V1, V2> {
-        void onAdd(V1 v1, V2 v2);
-    }
-
-    private OnAdd<V1, V2> onAdd;
-
+    private DoubleMap.OnAdd<V1, V2> onAdd;
     final private Cache<V1, V2> map;
     final private Cache<V2, V1> reversedMap;
 
@@ -18,7 +12,7 @@ public class DoubleMapCache<V1, V2> implements DoubleMap<V1, V2> {
         this.reversedMap = reversedMap;
     }
 
-    public DoubleMapCache(Cache<V1, V2> map, Cache<V2, V1> reversedMap, OnAdd onAdd) {
+    public DoubleMapCache(Cache<V1, V2> map, Cache<V2, V1> reversedMap, DoubleMap.OnAdd<V1, V2> onAdd) {
         this.map = map;
         this.reversedMap = reversedMap;
         this.onAdd = onAdd;

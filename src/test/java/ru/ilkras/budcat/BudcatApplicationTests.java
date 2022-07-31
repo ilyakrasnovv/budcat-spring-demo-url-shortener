@@ -15,6 +15,12 @@ import org.springframework.test.context.transaction.TransactionalTestExecutionLi
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import ru.ilkras.budcat.api.MainRouting;
+import ru.ilkras.budcat.data.UrlsBondsManager;
+import ru.ilkras.budcat.models.DbUrlsBond;
+import ru.ilkras.budcat.utilities.ClassicDoubleMap;
+import ru.ilkras.budcat.utilities.DoubleMapCache;
+import ru.ilkras.budcat.utilities.MapBondsSaver;
+import ru.ilkras.budcat.utilities.UrlsBondsManagerTestsImpl;
 
 import static org.hamcrest.Matchers.containsString;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -23,6 +29,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.io.IOException;
+import java.util.HashMap;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -36,17 +43,20 @@ import static org.assertj.core.api.Assertions.assertThat;
 )
 @AutoConfigureMockMvc
 class BudcatApplicationTests {
-    private BudcatApplication app = new BudcatApplication();
-    private MainRouting mainRouting = new MainRouting();
-    private TestRestTemplate restTemplate = new TestRestTemplate();
-
+    final private BudcatApplication app = new BudcatApplication();
+    final private MainRouting mainRouting = new MainRouting();
+    final private TestRestTemplate restTemplate = new TestRestTemplate();
     @LocalServerPort
     private int port;
 
-    private MockMvc mockMvc;
+    final private MockMvc mockMvc;
 
     public BudcatApplicationTests() throws IOException {
-        mockMvc = MockMvcBuilders.standaloneSetup(new MainRouting()).build();
+        mockMvc = MockMvcBuilders.standaloneSetup(
+                new MainRouting(
+                        new UrlsBondsManagerTestsImpl()
+                )
+        ).build();
     }
 
     @Test
@@ -57,12 +67,12 @@ class BudcatApplicationTests {
     @Test
     void testHomePageViaMockMvc() throws Exception {
         String homePageLocation =
-        mockMvc
-                .perform(get("/"))
-                .andDo(print())
-                .andExpect(status().isFound())
-                .andReturn()
-                .getResponse().getHeader("Location");
+                mockMvc
+                        .perform(get("/"))
+                        .andDo(print())
+                        .andExpect(status().isFound())
+                        .andReturn()
+                        .getResponse().getHeader("Location");
         assertThat(homePageLocation).isEqualTo("/index.html");
     }
 
@@ -104,12 +114,12 @@ class BudcatApplicationTests {
         ).getResponse().getContentAsString();
         Long id = getId(response);
         String location =
-        mockMvc
-                .perform(get("/u/" + id))
-                .andExpect(status().isMovedPermanently())
-                .andReturn()
-                .getResponse()
-                .getHeader("Location");
+                mockMvc
+                        .perform(get("/u/" + id))
+                        .andExpect(status().isMovedPermanently())
+                        .andReturn()
+                        .getResponse()
+                        .getHeader("Location");
         assertThat(location).isEqualTo(url);
     }
 }
